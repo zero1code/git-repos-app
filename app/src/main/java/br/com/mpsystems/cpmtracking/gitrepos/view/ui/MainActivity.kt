@@ -9,7 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import br.com.mpsystems.cpmtracking.gitrepos.R
-import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.MainViewModel
+import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main.MainViewModel
 import br.com.mpsystems.cpmtracking.gitrepos.databinding.ActivityMainBinding
 import br.com.mpsystems.cpmtracking.gitrepos.view.adapter.RepoListAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                     }
                     is MainViewModel.RepoApiResult.Success -> {
                         adapter.submitList(event.lista)
+                        viewModel.insertUser(event.lista[0].owner)
                     }
                 }
             }

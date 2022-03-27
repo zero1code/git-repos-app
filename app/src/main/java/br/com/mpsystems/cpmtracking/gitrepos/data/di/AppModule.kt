@@ -1,9 +1,10 @@
 package br.com.mpsystems.cpmtracking.gitrepos.data.di
 
 import br.com.mpsystems.cpmtracking.gitrepos.data.api.GitHubApi
-import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.DefaultMainRepository
-import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.DispatcherProvider
-import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.MainRepository
+import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main.DefaultMainRepository
+import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main.DispatcherProvider
+import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main.MainRepository
+import br.com.mpsystems.cpmtracking.gitrepos.data.database.dao.GitUserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,7 +31,10 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMainRepository(api: GitHubApi) : MainRepository = DefaultMainRepository(api)
+    fun provideMainRepository(
+        api: GitHubApi,
+        gitUserDao: GitUserDao
+    ) : MainRepository = DefaultMainRepository(api, gitUserDao)
 
     @Singleton
     @Provides

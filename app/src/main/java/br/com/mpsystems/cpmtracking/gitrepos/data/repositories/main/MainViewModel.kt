@@ -1,14 +1,14 @@
-package br.com.mpsystems.cpmtracking.gitrepos.data.repositories
+package br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.mpsystems.cpmtracking.gitrepos.data.model.Owner
 import br.com.mpsystems.cpmtracking.gitrepos.data.model.Repo
 import br.com.mpsystems.cpmtracking.gitrepos.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 class MainViewModel @ViewModelInject constructor(
@@ -38,6 +38,18 @@ class MainViewModel @ViewModelInject constructor(
                     _repoList.value = RepoApiResult.Success(repos!!.toList())
                 }
             }
+        }
+    }
+
+    fun getUsersSearched() {
+        viewModelScope.launch(dispatchers.io) {
+
+        }
+    }
+
+    fun insertUser(owner: Owner) {
+        viewModelScope.launch(dispatchers.io) {
+            repository.insertUser(owner)
         }
     }
 }
