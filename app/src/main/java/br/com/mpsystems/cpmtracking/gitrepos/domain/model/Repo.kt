@@ -1,4 +1,4 @@
-package br.com.mpsystems.cpmtracking.gitrepos.data.model
+package br.com.mpsystems.cpmtracking.gitrepos.domain.model
 
 import com.google.gson.annotations.SerializedName
 

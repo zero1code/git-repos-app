@@ -1,10 +1,10 @@
-package br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main
+package br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos
 
-import br.com.mpsystems.cpmtracking.gitrepos.data.model.Owner
-import br.com.mpsystems.cpmtracking.gitrepos.data.model.Repo
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Owner
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
 import br.com.mpsystems.cpmtracking.gitrepos.util.Resource
 
-interface MainRepository {
+interface ReposRepository {
     suspend fun listRepository(user: String) : Resource<List<Repo>>
 
     suspend fun listUsers() : Resource<List<Owner>>

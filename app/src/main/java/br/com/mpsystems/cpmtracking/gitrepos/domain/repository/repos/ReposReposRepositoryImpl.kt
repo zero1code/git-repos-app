@@ -1,16 +1,17 @@
-package br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main
+package br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos
 
 import br.com.mpsystems.cpmtracking.gitrepos.data.api.GitHubApi
-import br.com.mpsystems.cpmtracking.gitrepos.data.model.Owner
-import br.com.mpsystems.cpmtracking.gitrepos.data.model.Repo
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Owner
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
 import br.com.mpsystems.cpmtracking.gitrepos.data.database.dao.GitUserDao
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos.ReposRepository
 import br.com.mpsystems.cpmtracking.gitrepos.util.Resource
 import javax.inject.Inject
 
-class DefaultMainRepository @Inject constructor(
+class ReposReposRepositoryImpl @Inject constructor(
     private val api: GitHubApi,
     private val gitUserDao: GitUserDao
-) : MainRepository {
+) : ReposRepository {
     override suspend fun listRepository(user: String): Resource<List<Repo>> {
         return try {
             val response = api.getRepos(user)

@@ -1,4 +1,4 @@
-package br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main
+package br.com.mpsystems.cpmtracking.gitrepos.domain.repository
 
 import kotlinx.coroutines.CoroutineDispatcher
 

@@ -1,10 +1,12 @@
 package br.com.mpsystems.cpmtracking.gitrepos.data.di
 
 import br.com.mpsystems.cpmtracking.gitrepos.data.api.GitHubApi
-import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main.DefaultMainRepository
-import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main.DispatcherProvider
-import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main.MainRepository
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos.ReposReposRepositoryImpl
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.DispatcherProvider
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos.ReposRepository
 import br.com.mpsystems.cpmtracking.gitrepos.data.database.dao.GitUserDao
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.users.UsersReposRepositoryImpl
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.users.UsersRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,7 +36,13 @@ object AppModule {
     fun provideMainRepository(
         api: GitHubApi,
         gitUserDao: GitUserDao
-    ) : MainRepository = DefaultMainRepository(api, gitUserDao)
+    ) : ReposRepository = ReposReposRepositoryImpl(api, gitUserDao)
+
+    @Singleton
+    @Provides
+    fun provideUsersRepository(
+        gitUserDao: GitUserDao
+    ) : UsersRepository = UsersReposRepositoryImpl(gitUserDao)
 
     @Singleton
     @Provides

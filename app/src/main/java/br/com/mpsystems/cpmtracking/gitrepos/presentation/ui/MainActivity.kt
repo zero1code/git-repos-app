@@ -1,9 +1,9 @@
-package br.com.mpsystems.cpmtracking.gitrepos.view.ui
+package br.com.mpsystems.cpmtracking.gitrepos.presentation.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import br.com.mpsystems.cpmtracking.gitrepos.databinding.ActivityMainBinding
-import br.com.mpsystems.cpmtracking.gitrepos.view.adapter.TabViewPagerAdapter
+import br.com.mpsystems.cpmtracking.gitrepos.presentation.adapter.TabViewPagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,7 +31,5 @@ class MainActivity : AppCompatActivity() {
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = adapter.tabs[position]
         }.attach()
-
-
     }
 }

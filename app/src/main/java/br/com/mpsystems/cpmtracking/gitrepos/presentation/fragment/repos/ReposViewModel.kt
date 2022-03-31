@@ -1,18 +1,21 @@
-package br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main
+package br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.repos
 
+import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.mpsystems.cpmtracking.gitrepos.data.model.Owner
-import br.com.mpsystems.cpmtracking.gitrepos.data.model.Repo
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Owner
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.DispatcherProvider
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos.ReposRepository
 import br.com.mpsystems.cpmtracking.gitrepos.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
-class MainViewModel @ViewModelInject constructor(
-    private val repository: MainRepository,
+class ReposViewModel @ViewModelInject constructor(
+    private val repository: ReposRepository,
     private val dispatchers: DispatcherProvider
 ) : ViewModel() {
 
@@ -49,7 +52,8 @@ class MainViewModel @ViewModelInject constructor(
 
     fun insertUser(owner: Owner) {
         viewModelScope.launch(dispatchers.io) {
-            repository.insertUser(owner)
+            val user = repository.insertUser(owner)
+            Log.d("TAG", "insertUser: $user")
         }
     }
 }

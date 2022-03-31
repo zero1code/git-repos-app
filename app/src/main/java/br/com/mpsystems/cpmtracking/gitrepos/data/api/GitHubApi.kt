@@ -1,7 +1,6 @@
 package br.com.mpsystems.cpmtracking.gitrepos.data.api
 
-import br.com.mpsystems.cpmtracking.gitrepos.data.model.Repo
-import kotlinx.coroutines.flow.Flow
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

@@ -1,4 +1,4 @@
-package br.com.mpsystems.cpmtracking.gitrepos.view.ui
+package br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.favorites
 
 import android.os.Bundle
 import android.util.Log
@@ -11,16 +11,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import br.com.mpsystems.cpmtracking.gitrepos.R
-import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main.MainViewModel
-import br.com.mpsystems.cpmtracking.gitrepos.databinding.FragmentReposBinding
-import br.com.mpsystems.cpmtracking.gitrepos.view.adapter.RepoListAdapter
+import br.com.mpsystems.cpmtracking.gitrepos.databinding.FragmentFavoritesBinding
+import br.com.mpsystems.cpmtracking.gitrepos.presentation.adapter.RepoListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextListener {
+class FavoritesFragment : Fragment(R.layout.fragment_favorites), SearchView.OnQueryTextListener {
 
-    private var binding: FragmentReposBinding? = null
-    private val viewModel: MainViewModel by viewModels()
+    private var binding: FragmentFavoritesBinding? = null
+    private val viewModel: FavoritesViewModel by viewModels()
     private val adapter by lazy { RepoListAdapter() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -29,7 +28,7 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
         activity?.actionBar
         setHasOptionsMenu(true)
 
-        binding = FragmentReposBinding.bind(view)
+        binding = FragmentFavoritesBinding.bind(view)
 
         binding?.let {
             it.rvRepos.adapter = adapter
@@ -38,16 +37,16 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
         lifecycleScope.launchWhenStarted {
             viewModel.repoList.collect { event ->
                 when (event) {
-                    MainViewModel.RepoApiResult.Empty -> {
+                    FavoritesViewModel.RepoApiResult.Empty -> {
                         Toast.makeText(requireContext(), "Vazio", Toast.LENGTH_SHORT).show()
                     }
-                    is MainViewModel.RepoApiResult.Failure -> {
+                    is FavoritesViewModel.RepoApiResult.Failure -> {
                         Toast.makeText(requireContext(), "Falhou", Toast.LENGTH_SHORT).show()
                     }
-                    MainViewModel.RepoApiResult.Loading -> {
+                    FavoritesViewModel.RepoApiResult.Loading -> {
                         Toast.makeText(requireContext(), "Carregando", Toast.LENGTH_SHORT).show()
                     }
-                    is MainViewModel.RepoApiResult.Success -> {
+                    is FavoritesViewModel.RepoApiResult.Success -> {
                         adapter.submitList(event.lista)
                         viewModel.insertUser(event.lista[0].owner)
                     }
