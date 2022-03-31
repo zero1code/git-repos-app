@@ -1,26 +1,16 @@
 package br.com.mpsystems.cpmtracking.gitrepos.view.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.lifecycleScope
-import br.com.mpsystems.cpmtracking.gitrepos.R
-import br.com.mpsystems.cpmtracking.gitrepos.data.repositories.main.MainViewModel
+import androidx.appcompat.app.AppCompatActivity
 import br.com.mpsystems.cpmtracking.gitrepos.databinding.ActivityMainBinding
-import br.com.mpsystems.cpmtracking.gitrepos.view.adapter.RepoListAdapter
+import br.com.mpsystems.cpmtracking.gitrepos.view.adapter.TabViewPagerAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val viewModel: MainViewModel by viewModels()
-    private val adapter by lazy { RepoListAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,47 +18,20 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         setSupportActionBar(binding.toolbar)
 
-        binding.rvRepos.adapter = adapter
+        setupViews()
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.repoList.collect { event ->
-                when(event) {
-                    MainViewModel.RepoApiResult.Empty -> {
-                        Toast.makeText(applicationContext, "Vazio", Toast.LENGTH_SHORT).show()
-                    }
-                    is MainViewModel.RepoApiResult.Failure -> {
-                        Toast.makeText(applicationContext, "Falhou", Toast.LENGTH_SHORT).show()
-                    }
-                    MainViewModel.RepoApiResult.Loading -> {
-                        Toast.makeText(applicationContext, "Carregando", Toast.LENGTH_SHORT).show()
-                    }
-                    is MainViewModel.RepoApiResult.Success -> {
-                        adapter.submitList(event.lista)
-                        viewModel.insertUser(event.lista[0].owner)
-                    }
-                }
-            }
-        }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        val searchView = menu.findItem(R.id.action_search).actionView as SearchView
-        searchView.setOnQueryTextListener(this)
-        return super.onCreateOptionsMenu(menu)
-    }
+    private fun setupViews() {
+        val tabLayout = binding.tabLayout
+        val viewPager = binding.viewPager2
+        val adapter = TabViewPagerAdapter(this)
+        viewPager.adapter = adapter
 
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        query?.let { viewModel.getRepoList(it) }
-        return true
-    }
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = adapter.tabs[position]
+        }.attach()
 
-    override fun onQueryTextChange(newText: String?): Boolean {
-        Log.e(TAG, "onQueryTextChange: $newText")
-        return true
-    }
 
-    companion object {
-        private const val TAG = "TAG"
     }
 }
