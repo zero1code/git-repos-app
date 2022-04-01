@@ -1,18 +1,23 @@
 package br.com.mpsystems.cpmtracking.gitrepos.data.database.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Owner
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.RepoWithOwner
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GitUserDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(entity: Owner): Long
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertUser(entity: Owner): Long
 
-    @Query(value = "SELECT * FROM tb_user")
-    fun findAll(): List<Owner>
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertFavorite(entity: Repo): Long
+
+    @Query(value = "SELECT * FROM tb_searched_users")
+    fun findAllUsersSearched(): List<Owner>
+
+//    @Query(value = "SELECT * FROM tb_favorites")
+//    fun findAllFavorites(): List<RepoWithOwner>
 }

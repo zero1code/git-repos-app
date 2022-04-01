@@ -14,6 +14,8 @@ import com.google.gson.JsonParser
 
 class RepoListAdapter : ListAdapter<Repo, RepoListAdapter.ViewHolder>(DiffCalback()) {
 
+    var listenerFavorite: (Repo) -> Unit = {}
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemRepoBinding.inflate(inflater, parent, false)
@@ -33,6 +35,9 @@ class RepoListAdapter : ListAdapter<Repo, RepoListAdapter.ViewHolder>(DiffCalbac
             binding.tvRepoLanguage.text = item.language
             binding.chipStar.text = item.stargazersCount.toString()
             binding.dot.setCardBackgroundColor(Color.parseColor(getLanguageColor(item.language)))
+            binding.btFavorite.setOnClickListener {
+                listenerFavorite(item)
+            }
         }
     }
 

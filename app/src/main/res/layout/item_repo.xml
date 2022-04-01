@@ -77,6 +77,16 @@
             app:layout_constraintTop_toBottomOf="@id/tv_repo_description"
             tools:text="@sample/repositories.json/data/language" />
 
+        <ImageView
+            android:id="@+id/bt_favorite"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_favorite"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

@@ -25,7 +25,7 @@ class DatabaseModule {
         return Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
-            "db.users"
+            "db.git_repo"
         ).build()
     }
 

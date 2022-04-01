@@ -5,10 +5,9 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "tb_user", indices = [Index(value = ["login", "idUser"], unique = true)])
+@Entity(tableName = "tb_searched_users", indices = [Index(value = ["login"], unique = true)])
 data class Owner (
-    @PrimaryKey(autoGenerate = true)
-    val idUser: Long = 0L,
+    @PrimaryKey()
     val login: String,
     @SerializedName("avatar_url")
     val avatarURL: String

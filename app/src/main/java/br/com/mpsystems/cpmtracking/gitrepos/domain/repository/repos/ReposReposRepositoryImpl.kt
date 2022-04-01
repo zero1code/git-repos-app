@@ -4,7 +4,6 @@ import br.com.mpsystems.cpmtracking.gitrepos.data.api.GitHubApi
 import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Owner
 import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
 import br.com.mpsystems.cpmtracking.gitrepos.data.database.dao.GitUserDao
-import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos.ReposRepository
 import br.com.mpsystems.cpmtracking.gitrepos.util.Resource
 import javax.inject.Inject
 
@@ -27,11 +26,11 @@ class ReposReposRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun listUsers(): Resource<List<Owner>> {
-        return Resource.Success(mutableListOf())
+    override suspend fun insertFavorite(repo: Repo): Long {
+        return gitUserDao.insertFavorite(repo)
     }
 
     override suspend fun insertUser(owner: Owner): Long {
-        return gitUserDao.insert(owner)
+        return gitUserDao.insertUser(owner)
     }
 }

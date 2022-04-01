@@ -10,7 +10,7 @@ class UsersReposRepositoryImpl @Inject constructor(
 ) : UsersRepository {
 
     override suspend fun listUsers(): Resource<List<Owner>> {
-        val list = gitUserDao.findAll()
+        val list = gitUserDao.findAllUsersSearched()
         return if (list.isNotEmpty()) Resource.Success(list) else Resource.Error("Erro ao buscar os dados.")
     }
 }

@@ -53,6 +53,11 @@ class UsersFragment : Fragment(R.layout.fragment_users), SearchView.OnQueryTextL
                 }
             }
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
         viewModel.getUsersSearched()
     }
 

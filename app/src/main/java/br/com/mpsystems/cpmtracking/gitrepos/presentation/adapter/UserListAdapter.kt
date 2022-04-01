@@ -46,6 +46,6 @@ class UserListAdapter : ListAdapter<Owner, UserListAdapter.ViewHolder>(UserDiffC
 class UserDiffCalback : DiffUtil.ItemCallback<Owner>() {
     override fun areItemsTheSame(oldItem: Owner, newItem: Owner) = oldItem == newItem
 
-    override fun areContentsTheSame(oldItem: Owner, newItem: Owner) = oldItem.idUser == newItem.idUser
+    override fun areContentsTheSame(oldItem: Owner, newItem: Owner) = oldItem.login == newItem.login
 
 }

@@ -61,6 +61,15 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
                 }
             }
         }
+
+        insertListeners()
+    }
+
+    private fun insertListeners() {
+        adapter.listenerFavorite = {
+            Log.d(TAG, "insertListeners: $it")
+            viewModel.insertFavorite(it)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

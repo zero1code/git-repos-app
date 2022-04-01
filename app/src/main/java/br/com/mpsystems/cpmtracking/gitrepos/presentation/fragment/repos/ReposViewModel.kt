@@ -44,16 +44,17 @@ class ReposViewModel @ViewModelInject constructor(
         }
     }
 
-    fun getUsersSearched() {
-        viewModelScope.launch(dispatchers.io) {
-
-        }
-    }
-
     fun insertUser(owner: Owner) {
         viewModelScope.launch(dispatchers.io) {
             val user = repository.insertUser(owner)
             Log.d("TAG", "insertUser: $user")
+        }
+    }
+
+    fun insertFavorite(repo: Repo) {
+        viewModelScope.launch(dispatchers.io) {
+            val favorite = repository.insertFavorite(repo)
+            Log.d("TAG", "insertFavorite: $favorite")
         }
     }
 }
