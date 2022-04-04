@@ -1,5 +1,6 @@
 package br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.favorites
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -12,7 +13,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import br.com.mpsystems.cpmtracking.gitrepos.R
 import br.com.mpsystems.cpmtracking.gitrepos.databinding.FragmentFavoritesBinding
-import br.com.mpsystems.cpmtracking.gitrepos.presentation.adapter.RepoListAdapter
+import br.com.mpsystems.cpmtracking.gitrepos.presentation.adapter.FavoriteListAdapter
+import br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.repos.ReposFragment
+import br.com.mpsystems.cpmtracking.gitrepos.util.DividerItemDecoration
+import br.com.mpsystems.cpmtracking.gitrepos.util.hideSoftKeyboard
+import br.com.mpsystems.cpmtracking.gitrepos.util.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,39 +25,55 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites), SearchView.OnQu
 
     private var binding: FragmentFavoritesBinding? = null
     private val viewModel: FavoritesViewModel by viewModels()
-    private val adapter by lazy { RepoListAdapter() }
+    private val adapter by lazy { FavoriteListAdapter() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        activity?.actionBar
-        setHasOptionsMenu(true)
 
         binding = FragmentFavoritesBinding.bind(view)
 
         binding?.let {
             it.rvRepos.adapter = adapter
+            it.rvRepos.addItemDecoration(DividerItemDecoration(requireContext()))
         }
 
         lifecycleScope.launchWhenStarted {
-            viewModel.repoList.collect { event ->
+            viewModel.favoriteList.collect { event ->
                 when (event) {
-                    FavoritesViewModel.RepoApiResult.Empty -> {
+                    FavoritesViewModel.FavoriteApiResult.Empty -> {
                         Toast.makeText(requireContext(), "Vazio", Toast.LENGTH_SHORT).show()
+                        adapter.submitList(null)
                     }
-                    is FavoritesViewModel.RepoApiResult.Failure -> {
+                    is FavoritesViewModel.FavoriteApiResult.Failure -> {
                         Toast.makeText(requireContext(), "Falhou", Toast.LENGTH_SHORT).show()
                     }
-                    FavoritesViewModel.RepoApiResult.Loading -> {
+                    FavoritesViewModel.FavoriteApiResult.Loading -> {
                         Toast.makeText(requireContext(), "Carregando", Toast.LENGTH_SHORT).show()
                     }
-                    is FavoritesViewModel.RepoApiResult.Success -> {
+                    is FavoritesViewModel.FavoriteApiResult.Success -> {
                         adapter.submitList(event.lista)
-                        viewModel.insertUser(event.lista[0].owner)
+                    }
+                    is FavoritesViewModel.FavoriteApiResult.Deleted -> {
+                        adapter.submitList(event.lista)
                     }
                 }
             }
         }
+        insertListeners()
+    }
+
+    @SuppressLint("ResourceType")
+    private fun insertListeners() {
+        adapter.listenerDeleteFavorite = {
+            viewModel.deleteFavorite(it.id)
+            binding?.root?.showSnackBar("Favorito removido.", resources.getString(R.color.red))?.show()
+            viewModel.getFavorites()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getFavorites()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -65,7 +86,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites), SearchView.OnQu
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        query?.let { viewModel.getRepoList(it) }
+//        query?.let { viewModel.getRepoList(it) }
         return true
     }
 

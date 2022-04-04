@@ -1,19 +1,21 @@
 package br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.repos
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import br.com.mpsystems.cpmtracking.gitrepos.R
 import br.com.mpsystems.cpmtracking.gitrepos.databinding.FragmentReposBinding
+import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
 import br.com.mpsystems.cpmtracking.gitrepos.presentation.adapter.RepoListAdapter
-import br.com.mpsystems.cpmtracking.gitrepos.util.DividerItemDecoration
+import br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.favorites.FavoritesViewModel
+import br.com.mpsystems.cpmtracking.gitrepos.util.*
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +24,11 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
 
     private var binding: FragmentReposBinding? = null
     private val viewModel: ReposViewModel by viewModels()
+    private val viewModelFavorite: FavoritesViewModel by viewModels()
+    private lateinit var repos: List<Repo>
     private val adapter by lazy { RepoListAdapter() }
+    private val dialog by lazy { activity?.createProgressDialog() }
+    private var user: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,6 +40,7 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
 
         binding?.let {
             it.rvRepos.adapter = adapter
+            it.rvRepos.hasFixedSize()
             it.rvRepos.addItemDecoration(DividerItemDecoration(requireContext()))
         }
 
@@ -41,22 +48,28 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
             viewModel.repoList.collect { event ->
                 when (event) {
                     ReposViewModel.RepoApiResult.Empty -> {
-                        Toast.makeText(requireContext(), "Vazio", Toast.LENGTH_SHORT).show()
+                        activity?.createDialog {
+                            setMessage("Faça a pesquisa de um usuário para ver os repositórios.")
+                        }?.show()
                     }
                     is ReposViewModel.RepoApiResult.Failure -> {
-                        Toast.makeText(requireContext(), "Falhou", Toast.LENGTH_SHORT).show()
+                        activity?.createDialog {
+                            setMessage("Erro.")
+                        }?.show()
                     }
                     ReposViewModel.RepoApiResult.Loading -> {
-                        Toast.makeText(requireContext(), "Carregando", Toast.LENGTH_SHORT).show()
+                        dialog?.show()
                     }
                     is ReposViewModel.RepoApiResult.Success -> {
-                        adapter.submitList(event.lista)
+                        repos = event.lista
+                        adapter.submitList(repos)
                         viewModel.insertUser(event.lista[0].owner)
 
                         binding?.let {
                             it.tvUser.text = event.lista[0].owner.login
                             Glide.with(requireContext()).load(event.lista[0].owner.avatarURL).into(it.ivUser)
                         }
+                        dialog?.dismiss()
                     }
                 }
             }
@@ -65,10 +78,27 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
         insertListeners()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (user.isNotEmpty()) viewModel.getRepoList(user)
+    }
+
+    @SuppressLint("ResourceType")
     private fun insertListeners() {
-        adapter.listenerFavorite = {
-            Log.d(TAG, "insertListeners: $it")
-            viewModel.insertFavorite(it)
+        adapter.listenerFavorite = { position ->
+            val repo = adapter.currentList[position]
+
+            if (repo.isFavorite == 1) {
+                viewModelFavorite.deleteFavorite(repo.id)
+                repos.find { it.id == repo.id }?.isFavorite = 0
+                binding?.root?.showSnackBar("Favorito removido.", resources.getString(R.color.red))?.show()
+            } else {
+                viewModel.insertFavorite(repo)
+                repos.find { it.id == repo.id }?.isFavorite = 1
+                binding?.root?.showSnackBar("Favorito adicionado.", resources.getString(R.color.green))?.show()
+            }
+
+            adapter.notifyItemChanged(position)
         }
     }
 
@@ -82,7 +112,11 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        query?.let { viewModel.getRepoList(it) }
+        binding?.root?.hideSoftKeyboard()
+        query?.let {
+            viewModel.getRepoList(it)
+            user = it
+        }
         return true
     }
 

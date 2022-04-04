@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Owner
 import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
 import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.DispatcherProvider
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.favorites.FavoritesRepository
 import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos.ReposRepository
 import br.com.mpsystems.cpmtracking.gitrepos.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class ReposViewModel @ViewModelInject constructor(
     private val repository: ReposRepository,
+    private val favoritesRepository: FavoritesRepository,
     private val dispatchers: DispatcherProvider
 ) : ViewModel() {
 
@@ -37,8 +39,20 @@ class ReposViewModel @ViewModelInject constructor(
             when(val response = repository.listRepository(user)) {
                 is Resource.Error -> _repoList.value = RepoApiResult.Failure(response.message!!)
                 is Resource.Success -> {
-                    val repos = response.data
-                    _repoList.value = RepoApiResult.Success(repos!!.toList())
+                    when (val favResponse = favoritesRepository.findAllFavorites()) {
+                        is Resource.Error -> {
+                            _repoList.value = RepoApiResult.Success(response.data!!.toList())
+                        }
+                        is Resource.Success -> {
+                            val favorites = favResponse.data!!.toList()
+
+                            favorites.forEach { favorite ->
+                                response.data?.find { it.id == favorite.id }?.isFavorite = 1
+                            }
+                            _repoList.value = RepoApiResult.Success(response.data!!.toList())
+                        }
+                    }
+
                 }
             }
         }

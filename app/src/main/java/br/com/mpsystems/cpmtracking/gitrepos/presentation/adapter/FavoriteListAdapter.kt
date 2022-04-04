@@ -6,20 +6,21 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import br.com.mpsystems.cpmtracking.gitrepos.R
+import br.com.mpsystems.cpmtracking.gitrepos.databinding.ItemFavoriteBinding
 import br.com.mpsystems.cpmtracking.gitrepos.databinding.ItemRepoBinding
 import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
+import com.bumptech.glide.Glide
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 
 
-class RepoListAdapter : ListAdapter<Repo, RepoListAdapter.ViewHolder>(DiffCalback()) {
+class FavoriteListAdapter : ListAdapter<Repo, FavoriteListAdapter.ViewHolder>(DiffCalbackFavorite()) {
 
-    var listenerFavorite: (position: Int) -> Unit = {}
+    var listenerDeleteFavorite: (Repo) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemRepoBinding.inflate(inflater, parent, false)
+        val binding = ItemFavoriteBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
@@ -28,22 +29,16 @@ class RepoListAdapter : ListAdapter<Repo, RepoListAdapter.ViewHolder>(DiffCalbac
     }
 
     inner class ViewHolder(
-        private val binding: ItemRepoBinding
+        private val binding: ItemFavoriteBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Repo) {
             binding.tvRepoName.text = item.name
             binding.tvRepoDescription.text = item.description
             binding.tvRepoLanguage.text = item.language
-            binding.chipStar.text = item.stargazersCount.toString()
             binding.dot.setCardBackgroundColor(Color.parseColor(getLanguageColor(item.language)))
-            if (item.isFavorite == 1) {
-                binding.btFavorite.setImageResource(R.drawable.ic_favorited)
-            } else {
-                binding.btFavorite.setImageResource(R.drawable.ic_favorite)
-            }
-//            binding.btFavorite.setImageResource(if (item.isFavorite == 1) R.drawable.ic_favorited else R.drawable.ic_favorite)
-            binding.btFavorite.setOnClickListener {
-                listenerFavorite(adapterPosition)
+            Glide.with(binding.root.context).load(item.owner.avatarURL).into(binding.ivOwner)
+            binding.btDelete.setOnClickListener {
+                listenerDeleteFavorite(item)
             }
         }
     }
@@ -259,9 +254,9 @@ class RepoListAdapter : ListAdapter<Repo, RepoListAdapter.ViewHolder>(DiffCalbac
     }
 }
 
-class DiffCalback : DiffUtil.ItemCallback<Repo>() {
+class DiffCalbackFavorite : DiffUtil.ItemCallback<Repo>() {
     override fun areItemsTheSame(oldItem: Repo, newItem: Repo) = oldItem == newItem
 
-    override fun areContentsTheSame(oldItem: Repo, newItem: Repo) = oldItem.id == newItem.id && oldItem.isFavorite == newItem.isFavorite
+    override fun areContentsTheSame(oldItem: Repo, newItem: Repo) = oldItem.id == newItem.id
 
 }

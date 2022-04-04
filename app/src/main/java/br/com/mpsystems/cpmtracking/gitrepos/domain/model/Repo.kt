@@ -14,5 +14,6 @@ data class Repo (
     val language: String,
     @SerializedName("html_url")
     val htmlURL: String,
-    val description: String?
+    val description: String?,
+    var isFavorite: Int
 )

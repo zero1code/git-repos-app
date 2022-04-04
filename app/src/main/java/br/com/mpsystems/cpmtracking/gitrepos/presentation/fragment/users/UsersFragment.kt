@@ -27,14 +27,13 @@ class UsersFragment : Fragment(R.layout.fragment_users), SearchView.OnQueryTextL
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity?.actionBar
-        setHasOptionsMenu(true)
-
         binding = FragmentUsersBinding.bind(view)
 
         binding?.let {
             it.rvUsers.adapter = adapter
         }
+        viewModel.getUsersSearched()
+
         lifecycleScope.launchWhenStarted {
             viewModel.userList.collect { event ->
                 when (event) {

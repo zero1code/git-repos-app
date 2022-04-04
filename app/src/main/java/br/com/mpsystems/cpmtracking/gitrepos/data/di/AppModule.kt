@@ -5,6 +5,8 @@ import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos.ReposReposR
 import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.DispatcherProvider
 import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.repos.ReposRepository
 import br.com.mpsystems.cpmtracking.gitrepos.data.database.dao.GitUserDao
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.favorites.FavoritesReposRepositoryImpl
+import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.favorites.FavoritesRepository
 import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.users.UsersReposRepositoryImpl
 import br.com.mpsystems.cpmtracking.gitrepos.domain.repository.users.UsersRepository
 import dagger.Module
@@ -43,6 +45,12 @@ object AppModule {
     fun provideUsersRepository(
         gitUserDao: GitUserDao
     ) : UsersRepository = UsersReposRepositoryImpl(gitUserDao)
+
+    @Singleton
+    @Provides
+    fun provideFavoritesRepository(
+        gitUserDao: GitUserDao
+    ) : FavoritesRepository = FavoritesReposRepositoryImpl(gitUserDao)
 
     @Singleton
     @Provides

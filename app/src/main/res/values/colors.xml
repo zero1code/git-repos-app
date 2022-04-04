@@ -10,4 +10,6 @@
 
     <color name="repo_name">#0969da</color>
     <color name="user_name">#24292f</color>
+    <color name="red">#F34349</color>
+    <color name="green">#34AF61</color>
 </resources>

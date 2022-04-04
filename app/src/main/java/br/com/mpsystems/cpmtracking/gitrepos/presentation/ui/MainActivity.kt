@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         setupViews()
-
     }
 
     private fun setupViews() {
