@@ -48,13 +48,15 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
             viewModel.repoList.collect { event ->
                 when (event) {
                     ReposViewModel.RepoApiResult.Empty -> {
+                        dialog?.dismiss()
                         activity?.createDialog {
-                            setMessage("Faça a pesquisa de um usuário para ver os repositórios.")
+                            setMessage("Aqui vai a tela bonita")
                         }?.show()
                     }
                     is ReposViewModel.RepoApiResult.Failure -> {
+                        dialog?.dismiss()
                         activity?.createDialog {
-                            setMessage("Erro.")
+                            setMessage(event.errorText)
                         }?.show()
                     }
                     ReposViewModel.RepoApiResult.Loading -> {

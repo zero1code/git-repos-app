@@ -49,7 +49,11 @@ class ReposViewModel @ViewModelInject constructor(
                             favorites.forEach { favorite ->
                                 response.data?.find { it.id == favorite.id }?.isFavorite = 1
                             }
-                            _repoList.value = RepoApiResult.Success(response.data!!.toList())
+                            if (response.data!!.toList().isNotEmpty()) {
+                                _repoList.value = RepoApiResult.Success(response.data!!.toList())
+                            } else {
+                                _repoList.value = RepoApiResult.Failure("Nenhum repositório encontrado.")
+                            }
                         }
                     }
 
