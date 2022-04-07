@@ -13,7 +13,7 @@ class FavoritesReposRepositoryImpl @Inject constructor(
         val list = gitUserDao.findAllFavorites()
         return if (list.isNotEmpty()) Resource.Success(list) else Resource.Error("Erro ao buscar os dados.")
     }
-    override fun deleteFavorite(id: Long) {
-        gitUserDao.deleteFavorite(id)
+    override fun deleteFavorite(id: Long) : Int {
+        return gitUserDao.deleteFavorite(id)
     }
 }

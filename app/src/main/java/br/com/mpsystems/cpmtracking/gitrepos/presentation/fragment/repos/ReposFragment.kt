@@ -15,9 +15,11 @@ import br.com.mpsystems.cpmtracking.gitrepos.databinding.FragmentReposBinding
 import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
 import br.com.mpsystems.cpmtracking.gitrepos.presentation.adapter.RepoListAdapter
 import br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.favorites.FavoritesViewModel
+import br.com.mpsystems.cpmtracking.gitrepos.presentation.ui.MainActivity
 import br.com.mpsystems.cpmtracking.gitrepos.util.*
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 
 @AndroidEntryPoint
 class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextListener {
@@ -28,7 +30,8 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
     private lateinit var repos: List<Repo>
     private val adapter by lazy { RepoListAdapter() }
     private val dialog by lazy { activity?.createProgressDialog() }
-    private var user: String = ""
+    private var reposStateJob: Job? = null
+    private var lastUser: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,7 +47,26 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
             it.rvRepos.addItemDecoration(DividerItemDecoration(requireContext()))
         }
 
-        lifecycleScope.launchWhenStarted {
+        insertListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (lastUser.isNotEmpty()) viewModel.getRepoList(lastUser)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setupLifecycle()
+    }
+
+    override fun onStop() {
+        reposStateJob?.cancel()
+        super.onStop()
+    }
+
+    private fun setupLifecycle() {
+        reposStateJob = lifecycleScope.launchWhenStarted {
             viewModel.repoList.collect { event ->
                 when (event) {
                     ReposViewModel.RepoApiResult.Empty -> {
@@ -76,14 +98,8 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
                 }
             }
         }
-
-        insertListeners()
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (user.isNotEmpty()) viewModel.getRepoList(user)
-    }
 
     @SuppressLint("ResourceType")
     private fun insertListeners() {
@@ -91,7 +107,7 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
             val repo = adapter.currentList[position]
 
             if (repo.isFavorite == 1) {
-                viewModelFavorite.deleteFavorite(repo.id)
+                viewModelFavorite.deleteFavorite(repo)
                 repos.find { it.id == repo.id }?.isFavorite = 0
                 binding?.root?.showSnackBar("Favorito removido.", resources.getString(R.color.red))?.show()
             } else {
@@ -117,7 +133,7 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
         binding?.root?.hideSoftKeyboard()
         query?.let {
             viewModel.getRepoList(it)
-            user = it
+            lastUser = it
         }
         return true
     }

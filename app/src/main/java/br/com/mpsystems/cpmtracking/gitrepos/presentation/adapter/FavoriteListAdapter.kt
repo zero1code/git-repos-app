@@ -16,7 +16,7 @@ import com.google.gson.JsonParser
 
 class FavoriteListAdapter : ListAdapter<Repo, FavoriteListAdapter.ViewHolder>(DiffCalbackFavorite()) {
 
-    var listenerDeleteFavorite: (Repo) -> Unit = {}
+    var listenerDeleteFavorite: (positon: Int) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -38,7 +38,7 @@ class FavoriteListAdapter : ListAdapter<Repo, FavoriteListAdapter.ViewHolder>(Di
             binding.dot.setCardBackgroundColor(Color.parseColor(getLanguageColor(item.language)))
             Glide.with(binding.root.context).load(item.owner.avatarURL).into(binding.ivOwner)
             binding.btDelete.setOnClickListener {
-                listenerDeleteFavorite(item)
+                listenerDeleteFavorite(adapterPosition)
             }
         }
     }

@@ -29,7 +29,7 @@ class ReposViewModel @ViewModelInject constructor(
     }
 
     private val _repoList = MutableStateFlow<RepoApiResult>(RepoApiResult.Empty)
-    val repoList: StateFlow<RepoApiResult> = _repoList
+    val repoList: StateFlow<RepoApiResult> get() = _repoList
 
     fun getRepoList(
         user: String

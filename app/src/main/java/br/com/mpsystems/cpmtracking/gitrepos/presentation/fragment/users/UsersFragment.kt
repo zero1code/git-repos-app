@@ -16,13 +16,15 @@ import br.com.mpsystems.cpmtracking.gitrepos.databinding.FragmentUsersBinding
 import br.com.mpsystems.cpmtracking.gitrepos.presentation.adapter.UserListAdapter
 import br.com.mpsystems.cpmtracking.gitrepos.util.DividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 
 @AndroidEntryPoint
-class UsersFragment : Fragment(R.layout.fragment_users), SearchView.OnQueryTextListener {
+class UsersFragment : Fragment(R.layout.fragment_users) {
 
     private var binding: FragmentUsersBinding? = null
     private val viewModel: UsersViewModel by viewModels()
     private val adapter by lazy { UserListAdapter() }
+    private var userStateJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,9 +34,25 @@ class UsersFragment : Fragment(R.layout.fragment_users), SearchView.OnQueryTextL
         binding?.let {
             it.rvUsers.adapter = adapter
         }
-        viewModel.getUsersSearched()
+    }
 
-        lifecycleScope.launchWhenStarted {
+    override fun onResume() {
+        super.onResume()
+        viewModel.getUsersSearched()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setupLifecycle()
+    }
+
+    override fun onStop() {
+        userStateJob?.cancel()
+        super.onStop()
+    }
+
+    private fun setupLifecycle() {
+        userStateJob = lifecycleScope.launchWhenStarted {
             viewModel.userList.collect { event ->
                 when (event) {
                     UsersViewModel.UsersListResult.Empty -> {
@@ -52,34 +70,5 @@ class UsersFragment : Fragment(R.layout.fragment_users), SearchView.OnQueryTextL
                 }
             }
         }
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.getUsersSearched()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.main_menu, menu)
-        val searchView = menu.findItem(R.id.action_search).actionView as SearchView
-        searchView.setOnQueryTextListener(this)
-        searchView.queryHint = "Pesquisar..."
-
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onQueryTextSubmit(query: String?): Boolean {
-//        query?.let { viewModel.getRepoList(it) }
-        return true
-    }
-
-    override fun onQueryTextChange(newText: String?): Boolean {
-        Log.e(TAG, "onQueryTextChange: $newText")
-        return true
-    }
-
-    companion object {
-        private const val TAG = "TAG"
     }
 }

@@ -21,5 +21,5 @@ interface GitUserDao {
     fun findAllFavorites(): List<Repo>
 
     @Query("DELETE from tb_favorites where id = :id")
-    fun deleteFavorite(id: Long)
+    fun deleteFavorite(id: Long) : Int
 }

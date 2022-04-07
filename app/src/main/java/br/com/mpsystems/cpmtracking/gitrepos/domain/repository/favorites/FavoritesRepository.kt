@@ -6,6 +6,6 @@ import br.com.mpsystems.cpmtracking.gitrepos.util.Resource
 interface FavoritesRepository {
     suspend fun findAllFavorites() : Resource<List<Repo>>
 
-    fun deleteFavorite(id: Long)
+    fun deleteFavorite(id: Long) : Int
 
 }

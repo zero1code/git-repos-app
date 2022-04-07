@@ -26,7 +26,7 @@ class UsersViewModel @ViewModelInject constructor(
     }
 
     private val _userList = MutableStateFlow<UsersListResult>(UsersListResult.Empty)
-    val userList: StateFlow<UsersListResult> = _userList
+    val userList: StateFlow<UsersListResult> get() = _userList
 
     fun getUsersSearched() {
         viewModelScope.launch(dispatchers.io) {
