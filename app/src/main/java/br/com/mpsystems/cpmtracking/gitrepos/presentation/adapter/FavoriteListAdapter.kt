@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import br.com.mpsystems.cpmtracking.gitrepos.databinding.ItemFavoriteBinding
-import br.com.mpsystems.cpmtracking.gitrepos.databinding.ItemRepoBinding
 import br.com.mpsystems.cpmtracking.gitrepos.domain.model.Repo
 import com.bumptech.glide.Glide
 import com.google.gson.JsonElement

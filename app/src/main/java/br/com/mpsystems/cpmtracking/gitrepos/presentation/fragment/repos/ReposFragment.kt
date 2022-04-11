@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -46,7 +47,7 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
 
         binding?.let {
             it.rvRepos.adapter = adapter
-            it.rvRepos.hasFixedSize()
+            ViewCompat.setNestedScrollingEnabled(it.rvRepos, false)
             it.rvRepos.addItemDecoration(DividerItemDecoration(requireContext()))
         }
 
@@ -101,8 +102,21 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
                         }
                         dialog?.dismiss()
                     }
-                    ReposViewModel.RepoApiResult.SuccessFavorite -> tableLayout?.getTabAt(2)?.orCreateBadge
-                    ReposViewModel.RepoApiResult.SuccessUser -> tableLayout?.getTabAt(1)?.orCreateBadge
+                    is ReposViewModel.RepoApiResult.SuccessUser -> {
+                        val badge = tableLayout?.getTabAt(1)?.orCreateBadge
+                        badge?.number = 1
+                        badge?.verticalOffset = 28
+                        badge?.horizontalOffset = -25
+
+                        viewModel.nothingToDo()
+                    }
+                    is ReposViewModel.RepoApiResult.SuccessFavorite -> {
+                        val badge = tableLayout?.getTabAt(2)?.orCreateBadge
+                        badge?.verticalOffset = 28
+                        badge?.horizontalOffset = -25
+                        viewModel.nothingToDo()
+                    }
+                    is ReposViewModel.RepoApiResult.Nothing -> Unit
                 }
             }
         }

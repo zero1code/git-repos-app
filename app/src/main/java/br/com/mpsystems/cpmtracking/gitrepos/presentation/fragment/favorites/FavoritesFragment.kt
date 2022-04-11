@@ -26,7 +26,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding = FragmentFavoritesBinding.bind(view)
 
         binding?.let {
@@ -39,8 +38,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
     }
 
     override fun onResume() {
-        viewModel.getFavorites()
         super.onResume()
+        viewModel.getFavorites()
     }
 
     override fun onStart() {

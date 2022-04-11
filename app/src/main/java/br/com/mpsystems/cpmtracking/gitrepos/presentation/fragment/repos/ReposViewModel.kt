@@ -1,6 +1,5 @@
 package br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.repos
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,6 +27,7 @@ class ReposViewModel @ViewModelInject constructor(
         object SuccessFavorite : RepoApiResult()
         object Loading : RepoApiResult()
         object Empty : RepoApiResult()
+        object Nothing : RepoApiResult()
     }
 
     private val _repoList = MutableStateFlow<RepoApiResult>(RepoApiResult.Empty)
@@ -52,7 +52,7 @@ class ReposViewModel @ViewModelInject constructor(
                                 response.data?.find { it.id == favorite.id }?.isFavorite = 1
                             }
                             if (response.data!!.toList().isNotEmpty()) {
-                                _repoList.value = RepoApiResult.Success(response.data!!.toList())
+                                _repoList.value = RepoApiResult.Success(response.data.toList())
                             } else {
                                 _repoList.value =
                                     RepoApiResult.Failure("Nenhum repositório encontrado.")
@@ -62,6 +62,12 @@ class ReposViewModel @ViewModelInject constructor(
 
                 }
             }
+        }
+    }
+
+    fun nothingToDo() {
+        viewModelScope.launch(dispatchers.io) {
+            _repoList.value = RepoApiResult.Nothing
         }
     }
 
