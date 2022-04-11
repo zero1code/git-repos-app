@@ -18,6 +18,7 @@ import br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.favorites.Fav
 import br.com.mpsystems.cpmtracking.gitrepos.presentation.ui.MainActivity
 import br.com.mpsystems.cpmtracking.gitrepos.util.*
 import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 
@@ -33,6 +34,8 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
     private var reposStateJob: Job? = null
     private var lastUser: String = ""
 
+    private var tableLayout: TabLayout? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -46,6 +49,9 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
             it.rvRepos.hasFixedSize()
             it.rvRepos.addItemDecoration(DividerItemDecoration(requireContext()))
         }
+
+        tableLayout = (activity as? MainActivity)?.tabLayout
+
 
         insertListeners()
     }
@@ -95,6 +101,8 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
                         }
                         dialog?.dismiss()
                     }
+                    ReposViewModel.RepoApiResult.SuccessFavorite -> tableLayout?.getTabAt(2)?.orCreateBadge
+                    ReposViewModel.RepoApiResult.SuccessUser -> tableLayout?.getTabAt(1)?.orCreateBadge
                 }
             }
         }

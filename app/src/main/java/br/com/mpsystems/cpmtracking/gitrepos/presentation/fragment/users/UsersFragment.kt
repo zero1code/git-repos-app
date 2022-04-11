@@ -34,6 +34,8 @@ class UsersFragment : Fragment(R.layout.fragment_users) {
         binding?.let {
             it.rvUsers.adapter = adapter
         }
+
+        viewModel.getUsersSearched()
     }
 
     override fun onResume() {

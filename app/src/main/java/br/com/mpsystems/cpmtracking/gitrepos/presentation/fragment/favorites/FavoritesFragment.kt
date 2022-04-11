@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import br.com.mpsystems.cpmtracking.gitrepos.R
 import br.com.mpsystems.cpmtracking.gitrepos.databinding.FragmentFavoritesBinding
 import br.com.mpsystems.cpmtracking.gitrepos.presentation.adapter.FavoriteListAdapter
+import br.com.mpsystems.cpmtracking.gitrepos.presentation.ui.MainActivity
 import br.com.mpsystems.cpmtracking.gitrepos.util.DividerItemDecoration
 import br.com.mpsystems.cpmtracking.gitrepos.util.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +35,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
         }
 
         insertListeners()
+        viewModel.getFavorites()
     }
 
     override fun onResume() {
