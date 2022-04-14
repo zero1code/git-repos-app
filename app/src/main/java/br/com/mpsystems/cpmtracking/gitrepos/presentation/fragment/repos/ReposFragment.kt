@@ -1,11 +1,16 @@
 package br.com.mpsystems.cpmtracking.gitrepos.presentation.fragment.repos
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
@@ -36,6 +41,7 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
     private var lastUser: String = ""
 
     private var tableLayout: TabLayout? = null
+    private var ivChangeTheme: ImageView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,13 +51,15 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
 
         binding = FragmentReposBinding.bind(view)
 
-        binding?.let {
-            it.rvRepos.adapter = adapter
-            ViewCompat.setNestedScrollingEnabled(it.rvRepos, false)
-            it.rvRepos.addItemDecoration(DividerItemDecoration(requireContext()))
+        binding?.let { mBinding ->
+            mBinding.rvRepos.adapter = adapter
+            ViewCompat.setNestedScrollingEnabled(mBinding.rvRepos, false)
+            mBinding.rvRepos.addItemDecoration(DividerItemDecoration(requireContext()))
         }
 
         tableLayout = (activity as? MainActivity)?.tabLayout
+        ivChangeTheme = (activity as? MainActivity)?.ivChangeTheme
+
 
 
         insertListeners()
@@ -78,15 +86,14 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
                 when (event) {
                     ReposViewModel.RepoApiResult.Empty -> {
                         dialog?.dismiss()
-                        activity?.createDialog {
-                            setMessage("Aqui vai a tela bonita")
-                        }?.show()
+                        binding?.layoutEmptyState?.main?.visibility = View.VISIBLE
                     }
                     is ReposViewModel.RepoApiResult.Failure -> {
                         dialog?.dismiss()
-                        activity?.createDialog {
-                            setMessage(event.errorText)
-                        }?.show()
+                        if (event.errorText.isNotEmpty()) {
+                            binding?.layoutFailureState?.textView?.text = event.errorText
+                        }
+                        binding?.layoutFailureState?.main?.visibility = View.VISIBLE
                     }
                     ReposViewModel.RepoApiResult.Loading -> {
                         dialog?.show()
@@ -98,22 +105,23 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
 
                         binding?.let {
                             it.tvUser.text = event.lista[0].owner.login
-                            Glide.with(requireContext()).load(event.lista[0].owner.avatarURL).into(it.ivUser)
+                            Glide.with(requireContext()).load(event.lista[0].owner.avatarURL)
+                                .into(it.ivUser)
                         }
                         dialog?.dismiss()
+                        binding?.layoutEmptyState?.main?.visibility = View.GONE
+                        binding?.layoutFailureState?.main?.visibility = View.GONE
                     }
                     is ReposViewModel.RepoApiResult.SuccessUser -> {
                         val badge = tableLayout?.getTabAt(1)?.orCreateBadge
                         badge?.number = 1
-                        badge?.verticalOffset = 28
-                        badge?.horizontalOffset = -25
+
 
                         viewModel.nothingToDo()
                     }
                     is ReposViewModel.RepoApiResult.SuccessFavorite -> {
                         val badge = tableLayout?.getTabAt(2)?.orCreateBadge
-                        badge?.verticalOffset = 28
-                        badge?.horizontalOffset = -25
+
                         viewModel.nothingToDo()
                     }
                     is ReposViewModel.RepoApiResult.Nothing -> Unit
@@ -131,15 +139,32 @@ class ReposFragment : Fragment(R.layout.fragment_repos), SearchView.OnQueryTextL
             if (repo.isFavorite == 1) {
                 viewModelFavorite.deleteFavorite(repo)
                 repos.find { it.id == repo.id }?.isFavorite = 0
-                binding?.root?.showSnackBar("Favorito removido.", resources.getString(R.color.red))?.show()
+                binding?.root?.showSnackBar("Favorito removido.", resources.getString(R.color.red))
+                    ?.show()
             } else {
                 viewModel.insertFavorite(repo)
                 repos.find { it.id == repo.id }?.isFavorite = 1
-                binding?.root?.showSnackBar("Favorito adicionado.", resources.getString(R.color.green))?.show()
+                binding?.root?.showSnackBar(
+                    "Favorito adicionado.",
+                    resources.getString(R.color.green)
+                )?.show()
             }
 
             adapter.notifyItemChanged(position)
         }
+    }
+
+    fun takeScreenshotOfView(view: View, height: Int, width: Int): Bitmap {
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val bgDrawable = view.background
+        if (bgDrawable != null) {
+            bgDrawable.draw(canvas)
+        } else {
+            canvas.drawColor(Color.WHITE)
+        }
+        view.draw(canvas)
+        return bitmap
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

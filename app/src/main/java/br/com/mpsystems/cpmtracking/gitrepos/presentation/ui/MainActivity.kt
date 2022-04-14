@@ -1,6 +1,7 @@
 package br.com.mpsystems.cpmtracking.gitrepos.presentation.ui
 
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import br.com.mpsystems.cpmtracking.gitrepos.databinding.ActivityMainBinding
 import br.com.mpsystems.cpmtracking.gitrepos.presentation.adapter.TabViewPagerAdapter
@@ -13,26 +14,24 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     var tabLayout: TabLayout? = null
+    var ivChangeTheme: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
+        ivChangeTheme = binding.ivChangeTheme
 
         setupViews()
     }
 
     private fun setupViews() {
-//        if (position != 0) {
-//            val badge = tab.orCreateBadge
-//            badge.verticalOffset = 28
-//            badge.horizontalOffset = -25
-//        }
         tabLayout = binding.tabLayout
         val viewPager = binding.viewPager2
         val adapter = TabViewPagerAdapter(this)
         viewPager.adapter = adapter
+//        viewPager.isUserInputEnabled = false
 
         TabLayoutMediator(tabLayout!!, viewPager) { tab, position ->
             tab.text = adapter.tabs[position]
@@ -57,7 +56,6 @@ class MainActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab?) {
 
             }
-
         })
     }
 }
